@@ -753,8 +753,13 @@
         Astronauts to manually pilot the SpaceX Dragon 2 vehicle to the International Space Station. Successful docking
         is achieved when all green numbers in the center of the interface are below <span class="green">0.2</span>.
         Movement in space is <strong>slow</strong> and requires patience &amp; precision.</p>
-      <div id="begin-button" class="message-button animate">BEGIN</div>
+      <div id="begin-button" class="message-button animate">START MANUAL</div>
+      <img src="img/meme/bongo.gif" alt="Bongo Cat" class="animate" style="width:20%;height:20%;"></img>
+      <p class="animate">The automated docking sequence utilizes the <i>"live"</i> data from the SpaceX Dragon 2 vehicle
+        to calculate correction burns towards the ISS port.</p>
+      <div id="auto-button" class="message-button animate">START AUTO<br></div>
       <div id="instructions-button" class="text-button animate">INSTRUCTIONS</div>
+
     </div>
   </div>
   <div id="instructions" class="modal noselect">
@@ -909,6 +914,9 @@
 	</script>
 
   <script type="text/javascript" src="js/threed.min.js"></script>
+
+  <!-- Script for automating docking sequence -->
+  <script type="text/javascript" src="js/auto.js"></script>
 </body>
 
 </html>
