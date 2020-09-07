@@ -1,7 +1,8 @@
 /**
  * auto.js
  * --
- * This javascript file serves the purpose of automating the docking sequences.
+ * This javascript file serves the purpose of automating the docking sequences
+ * of SpaceX Dragon 2 capsule to the ISS.
  * 
  * Dragon Functions
  * --
@@ -11,14 +12,11 @@
  * translateForward(), translateBackward()
  * translateDown(), translateUp(), translateRight(), translateLeft()
  * toggleTranslation(), toggleRotation()
+ * 
  */
 
-console.log("AUTO DOCKING SCRIPT (ADS) LOADED & INITIATED.\nWAITING FOR SIM START");
-
-
-
 document.getElementById("auto-button").addEventListener("click", function () {
-  console.log("auto button pressed.")
+  hideIntro();
 });
 
 // Initiate Dragon's Object
@@ -28,34 +26,38 @@ var dragon = {
   y: 999.9,
   z: 999.9,
   rate: 0.0,
-  roll: {
-    error: 0.0,
-    rate: 0.0
-  },
-  pitch: {
-    error: 0.0,
-    rate: 0.0
-  },
-  yaw: {
-    error: 0.0,
-    rate: 0.0
-  }
-}
+  rollError: 0.0,
+  rollRate: 0.0,
+  pitchError: 0.0,
+  pitchRate: 0.0,
+  yawError: 0.0,
+  yawRate: 0.0
+};
 
-function dragonUpdate(dragon) {
+function telemetryUpdate() {
   // TODO DOM actions to update dragon object
+  dragon.x = parseFloat(document.getElementById("x-range").innerText);
+  dragon.y = parseFloat(document.getElementById("y-range").innerText);
+  dragon.z = parseFloat(document.getElementById("z-range").innerText);
+  dragon.rate = parseFloat(document.getElementById("rate").children[1].innerText);
+  dragon.rollError = parseFloat(document.getElementById("roll").children[0].innerText);
+  dragon.rollRate = parseFloat(document.getElementById("roll").children[1].innerText)
+  dragon.pitchError = parseFloat(document.getElementById("pitch").children[0].innerText)
+  dragon.pitchRate = parseFloat(document.getElementById("pitch").children[1].innerText)
+  dragon.yawError = parseFloat(document.getElementById("yaw").children[0].innerText)
+  dragon.yawRate = parseFloat(document.getElementById("yaw").children[1].innerText)
 }
 
 function correctRoll(dragon) {
   // TODO correct dragon's roll
-}
+};
 
 function correctPitch(dragon) {
   // TODO correct dragon's pitch
-}
+};
 
 function correctYaw(dragon) {
-  // TODO correct dragon's yaw
+  // TOD;O correct dragon's yaw
 }
 
 function correctAxis(dragon) {
@@ -63,4 +65,4 @@ function correctAxis(dragon) {
   // x = longitudinal axis (distance from ISS port)
   // y = lateral axis (horizontal)
   // z = vertical axis
-}
+};
