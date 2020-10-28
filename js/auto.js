@@ -33,46 +33,39 @@
  * range-rate: smoothRangeRate.toFixed(3)
  */
 
-// Initiate auto sequence
-document.getElementById("auto-button").addEventListener("click", function () {
-  hideIntro();
-});
-
 // Dragon Telemetry Class
 class DragonTelemetry {
 
   // Initialize telemetry (this may initialize to 0 if called within the first ~5 seconds)
   constructor() {
-    this.xDistance = camera.position.z - issObject.position.z;
-    this.yDistance = camera.position.x - issObject.position.x;
-    this.zDistance = camera.position.y - issObject.position.y;
-    this.pitchError = fixedRotationX;
-    this.yawError = fixedRotationY;
-    this.rollError = fixedRotationZ;
-    this.pitchRate = .1 * rateRotationX;
-    this.yawRate = .1 * rateRotationY;
-    this.rollRate = .1 * rateRotationZ;
-    this.range = Math.sqrt(this.xDistance * this.xDistance +
-      this.yDistance * this.yDistance +
-      this.zDistance * this.zDistance);
-    this.rangeRate = smoothRangeRate.toFixed(3);
+    this.xDistance = 999.99;
+    this.yDistance = 999.99;
+    this.zDistance = 999.99;
+    this.pitchError = 999.99;
+    this.yawError = 999.99;
+    this.rollError = 999.99;
+    this.pitchRate = 999.99;
+    this.yawRate = 999.99;
+    this.rollRate = 999.99;
+    this.range = 999.99;
+    this.rangeRate = 999.99;
   }
 
   // Updates telemetry
   update() {
-    this.xDistance = (camera.position.z - issObject.position.z).toFixed(1);
-    this.yDistance = (camera.position.x - issObject.position.x).toFixed(1);
-    this.zDistance = (camera.position.y - issObject.position.y).toFixed(1);
-    this.pitchError = fixedRotationX;
-    this.yawError = fixedRotationY;
-    this.rollError = fixedRotationZ;
+    this.xDistance = (camera.position.z - issObject.position.z);
+    this.yDistance = (camera.position.x - issObject.position.x);
+    this.zDistance = (camera.position.y - issObject.position.y);
+    this.pitchError = parseFloat(fixedRotationX);
+    this.yawError = parseFloat(fixedRotationY);
+    this.rollError = parseFloat(fixedRotationZ);
     this.pitchRate = .1 * rateRotationX;
     this.yawRate = .1 * rateRotationY;
     this.rollRate = .1 * rateRotationZ;
     this.range = Math.sqrt(this.xDistance * this.xDistance +
       this.yDistance * this.yDistance +
       this.zDistance * this.zDistance);
-    this.rangeRate = smoothRangeRate.toFixed(3);
+    this.rangeRate = smoothRangeRate;
   }
 
   // Console logs all telemetry
@@ -92,9 +85,63 @@ class DragonTelemetry {
   }
 }
 
-let dragTel = new DragonTelemetry();
+// Create Dragon Telemetry object
+var dragTel = new DragonTelemetry();
 
-setInterval(function () {
-  dragTel.update();
-  dragTel.status();
-}, 100)
+/**
+ * Corrects Yaw with automated burns
+ * @param {float} yawError - Angle of error
+ * @param {float} yawRate - Current rate of translation of yaw
+ */
+function correctYaw(yawError, yawRate) {
+  /* If yawError angle is POSITIVE and there currently is no correction burn
+   * for a POSITIVE angle, initiate a single correction burn for POSITIVE
+   * angle, yawRight().
+   */
+  if (yawError > 0.1 && yawRate * 10 != 1) {
+    yawRight();
+    console.log("Burn to correct positive yaw angle. (yawRight)");
+  }
+  /* If yawError angle is NEGATIVE and there currently is no correction burn
+   * for a NEGATIVE angle, initiate a single correction burn for NEGATIVE
+   * angle, yawLeft().
+   */
+  else if (yawError < -0.1 && yawRate * 10 != -1) {
+    yawLeft();
+    console.log("Burn to correct negative yaw angle. (yawLeft)");
+  }
+  /* Counter burn the moment right before the angle is about to zero out.
+   * In this case, counter burn when angle is +-0.1 deg.
+   */
+  else if (yawError == 0.1 || yawError == -0.1) {
+    switch (yawRate * 10) {
+      case -1:
+        yawRight();
+        console.log("Counter burning a negative yawRate (yawRight)");
+        break;
+      case 1:
+        yawLeft();
+        console.log("Counter burning a positive yawRate (yawLeft)");
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+// Initiate dragon corrections after 10 seconds (waiting for load)
+function correct(dragon) {
+  setTimeout(function () {
+    setInterval(function () { // Loop functions every 100 ms
+      dragon.update();
+      //dragon.status();
+      correctYaw(dragon.yawError, dragon.yawRate);
+    }, 100)
+  }, 10000)
+}
+
+// Initiate auto sequence
+document.getElementById("auto-button").addEventListener("click", function () {
+  hideIntro();
+  correct(dragTel);
+});
