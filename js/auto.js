@@ -186,8 +186,8 @@ function correctYaw(yawError, yawRate) {
 
 /**
  * Corrects Roll with automated burns
- * @param {float} yawError - Angle of error
- * @param {float} yawRate - Current rate of translation of roll
+ * @param {float} rollError - Angle of error
+ * @param {float} rollRate - Current rate of translation of roll
  */
 function correctRoll(rollError, rollRate) {
   // Check if roll is already zeroed
