@@ -21,8 +21,8 @@ class DragonTelemetry {
     this.rollRate = 999.999;
     this.range = 999.999;
     this.rangeRate = 999.999;
-    this.yRate = 999.999;
-    this.zRate = 999.999;
+    this.yRate = 0;
+    this.zRate = 0;
   }
 
   // Updates telemetry

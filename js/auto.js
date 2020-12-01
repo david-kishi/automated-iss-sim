@@ -163,13 +163,58 @@ function correctRoll(rollError, rollRate) {
   return false;
 }
 
+function correctY(dragon) {
+  if (dragon.yDistance >= -0.010 && dragon.yDistance <= 0.010 && dragon.yRate == 0) {
+    console.log("y corrected");
+    return true;
+  }
+
+  if (dragon.yDistance > 0.010 && dragon.yRate != -1) {
+    translateLeft();
+    dragon.yRate--;
+    console.log("translating left ", dragon.yRate);
+  } else if (dragon.yDistance < -0.010 && dragon.yRate != 1) {
+    translateRight();
+    dragon.yRate++;
+    console.log("translating right ", dragon.yRate);
+  } else if (dragon.yDistance >= -0.010 && dragon.yDistance <= 0.010) {
+    switch (dragon.yRate) {
+      case -1:
+        translateRight();
+        dragon.yRate++;
+        console.log("counter right ", dragon.yRate);
+        break;
+      case 1:
+        translateLeft();
+        dragon.yRate--;
+        console.log("counter left ", dragon.yRate);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+function correctXYZ(dragon) {
+  console.log("Beginning XYZ corrections.");
+  translateForward(); // note this changes the elliptical trajectory
+  let correctXYZ = setInterval(function () {
+    dragon.update();
+    if (!correctY(dragon)) {}
+  }, 10)
+}
+
 // Initiate dragon corrections after 10 seconds (waiting for load)
 function correct(dragon) {
   console.log("Beginning automating sequence.");
-  setInterval(function () { // Loop functions every 100 ms
+  let correctPYR = setInterval(function () { // Loop functions every 10 ms
     dragon.update();
     //dragon.status();
-    if (!correctYaw(dragon.yawError, dragon.yawRate)) {} else if (!correctRoll(dragon.rollError, dragon.rollRate)) {} else if (!correctPitch(dragon.pitchError, dragon.pitchRate)) {}
+    if (!correctYaw(dragon.yawError, dragon.yawRate)) {} else if (!correctRoll(dragon.rollError, dragon.rollRate)) {} else if (!correctPitch(dragon.pitchError, dragon.pitchRate)) {} else {
+      console.log("Pitch, Yaw, and Roll corrected.");
+      clearInterval(correctPYR);
+      correctXYZ(dragon);
+    }
   }, 10)
 }
 
@@ -179,12 +224,12 @@ document.getElementById("auto-button").addEventListener("click", function () {
 
   // Countdown
   let seconds = 10;
-  var countdown = setInterval(function () {
+  let countdown = setInterval(function () {
     console.log(seconds);
     seconds--;
     if (seconds == 0) {
       clearInterval(countdown);
-      correct(dragTel);
+      correct(dragTel); // Start PYR correction
     }
   }, 1000)
 });
