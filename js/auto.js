@@ -25,7 +25,7 @@ var dragTel = new DragonTelemetry();
  */
 function correctPitch(pitchError, pitchRate) {
   // Check if pitch is already zero'd
-  if (pitchError == 0 && pitchRate == 0) {
+  if (pitchError > -0.100 && pitchError < 0.100 && pitchRate == 0) {
     console.log("Pitch is zeroed.")
     return true;
   }
@@ -49,7 +49,7 @@ function correctPitch(pitchError, pitchRate) {
   /* Counter burn the moment right before the angle is about to zero out.
    * In this case, counter burn when angle is +-0.1 deg.
    */
-  else if (pitchError == 0.1 || pitchError == -0.1) {
+  else if (pitchError <= 0.100 && pitchError >= -0.100) {
     switch (pitchRate * 10) {
       case -1:
         pitchDown();
@@ -72,7 +72,7 @@ function correctPitch(pitchError, pitchRate) {
  */
 function correctYaw(yawError, yawRate) {
   // Check if yaw is already zero'd
-  if (yawError == 0 && yawRate == 0) {
+  if (yawError > -0.100 && yawError < 0.100 && yawRate == 0) {
     console.log("Yaw is zeroed.")
     return true;
   }
@@ -96,7 +96,7 @@ function correctYaw(yawError, yawRate) {
   /* Counter burn the moment right before the angle is about to zero out.
    * In this case, counter burn when angle is +-0.1 deg.
    */
-  else if (yawError == 0.1 || yawError == -0.1) {
+  else if (yawError <= 0.100 && yawError >= -0.100) {
     switch (yawRate * 10) {
       case -1:
         yawRight();
@@ -121,7 +121,7 @@ function correctYaw(yawError, yawRate) {
  */
 function correctRoll(rollError, rollRate) {
   // Check if roll is already zeroed
-  if (rollError == 0 && rollRate == 0) {
+  if (rollError > -0.100 && rollError < 0.100 && rollRate == 0) {
     console.log("Roll is zeroed.")
     return true;
   }
@@ -145,7 +145,7 @@ function correctRoll(rollError, rollRate) {
   /* Counter burn the moment right before the angle is about to zero out.
    * In this case, counter burn when angle is +-0.1 deg.
    */
-  else if (rollError == 0.1 || rollError == -0.1) {
+  else if (rollError <= 0.100 && rollError >= -0.100) {
     switch (rollRate * 10) {
       case -1:
         rollRight();
@@ -170,7 +170,7 @@ function correct(dragon) {
     dragon.update();
     //dragon.status();
     if (!correctYaw(dragon.yawError, dragon.yawRate)) {} else if (!correctRoll(dragon.rollError, dragon.rollRate)) {} else if (!correctPitch(dragon.pitchError, dragon.pitchRate)) {}
-  }, 100)
+  }, 10)
 }
 
 // Initiate auto sequence
