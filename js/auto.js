@@ -195,13 +195,57 @@ function correctY(dragon) {
   }
 }
 
+function correctZ(dragon) {
+  if (dragon.zDistance >= -0.010 && dragon.zDistance <= 0.010 && dragon.zRate == 0) {
+    console.log("z corrected");
+    return true;
+  }
+
+  if (dragon.zDistance > 0.010 && dragon.zRate != -1) {
+    translateDown();
+    dragon.zRate--;
+    console.log("translating down ", dragon.zRate);
+  } else if (dragon.zDistance < -0.010 && dragon.zRate != 1) {
+    translateUp();
+    dragon.zRate++;
+    console.log("translating up ", dragon.zRate);
+  } else if (dragon.zDistance >= -0.010 && dragon.zDistance <= 0.010) {
+    switch (dragon.zRate) {
+      case -1:
+        translateUp();
+        dragon.zRate++;
+        console.log("counter up ", dragon.zRate);
+        break;
+      case 1:
+        translateDown();
+        dragon.zRate--;
+        console.log("counter down ", dragon.zRate);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+
 function correctXYZ(dragon) {
   console.log("Beginning XYZ corrections.");
   translateForward(); // note this changes the elliptical trajectory
   let correctXYZ = setInterval(function () {
     dragon.update();
-    if (!correctY(dragon)) {}
+    if (!correctY(dragon)) {} else if (!correctZ(dragon)) {}
   }, 10)
+}
+
+// helper dev function to get gravity pull rate
+function gravityCheck() {
+  dragTel.update();
+  let gravityc = dragTel.zDistance;
+  setInterval(function () {
+    dragTel.update();
+    console.log(gravityc - dragTel.zDistance);
+    gravityc = dragTel.zDistance;
+  }, 1000)
 }
 
 // Initiate dragon corrections after 10 seconds (waiting for load)
