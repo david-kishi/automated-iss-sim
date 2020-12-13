@@ -233,11 +233,14 @@ function correctXYZ(dragon) {
   translateForward(); // note this changes the elliptical trajectory
   let correctXYZ = setInterval(function () {
     dragon.update();
-    if (!correctY(dragon)) {} else if (!correctZ(dragon)) {}
+    if (!correctY(dragon)) {} else if (!correctZ(dragon) && dragTel.xRate == 0) {
+      dragTel.xRate++;
+      translateForward();
+    }
   }, 10)
 }
 
-// helper dev function to get gravity pull rate
+// helper dev function to calculate gravity pull rate
 function gravityCheck() {
   dragTel.update();
   let gravityc = dragTel.zDistance;

@@ -21,6 +21,7 @@ class DragonTelemetry {
     this.rollRate = 999.999;
     this.range = 999.999;
     this.rangeRate = 999.999;
+    this.xRate = 0;
     this.yRate = 0;
     this.zRate = 0;
   }
