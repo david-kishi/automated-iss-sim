@@ -233,9 +233,14 @@ function correctXYZ(dragon) {
   translateForward(); // note this changes the elliptical trajectory
   let correctXYZ = setInterval(function () {
     dragon.update();
-    if (!correctY(dragon)) {} else if (!correctZ(dragon) && dragTel.xRate == 0) {
+    if (!correctY(dragon)) {} else if (!correctZ(dragon) && dragTel.xRate < 1) {
       dragTel.xRate++;
       translateForward();
+      console.log("translating forward. ", dragTel.xRate)
+    } else if (dragTel.xRate < 2) {
+      dragTel.xRate++;
+      translateForward();
+      console.log("translating forward. ", dragTel.xRate)
     }
   }, 10)
 }
