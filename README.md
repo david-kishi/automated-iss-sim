@@ -5,7 +5,6 @@ Automating SpaceX's ISS Docking Simulator using JavaScript and control feedback 
 
 ## How it works
 ![Automated SpaceX ISS Docking Sim Demo](readme/spacex_iss_demo.gif)
-*GIF demo of v1.0 of automating SpaceX ISS Docking Simulator*
 
 ***Logic Diagram Coming Soon***
 
