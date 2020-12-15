@@ -1,7 +1,7 @@
 /**
  * dragontelemetry.js
  * --
- * This javascript file serves the purpose of declaring the Dragon Telemtry
+ * This javascript file serves the purpose of declaring the Dragon Telemetry
  * class. This class will hold all current telemetry and update functions.
  */
 
