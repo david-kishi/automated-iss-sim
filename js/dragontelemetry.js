@@ -34,9 +34,9 @@ class DragonTelemetry {
     this.pitchError = parseFloat(fixedRotationX);
     this.yawError = parseFloat(fixedRotationY);
     this.rollError = parseFloat(fixedRotationZ);
-    this.pitchRate = .1 * rateRotationX;
-    this.yawRate = .1 * rateRotationY;
-    this.rollRate = .1 * rateRotationZ;
+    this.pitchRate = rateRotationX;
+    this.yawRate = rateRotationY;
+    this.rollRate = rateRotationZ;
     this.range = Math.sqrt(this.xDistance * this.xDistance +
       this.yDistance * this.yDistance +
       this.zDistance * this.zDistance);
