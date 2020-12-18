@@ -18,19 +18,39 @@
 // Create Dragon Telemetry object
 var dragTel = new DragonTelemetry();
 
-function correctDragon(lowerBound, upperBound, error, rate, axis, negativeBurn, positiveBurn) {
-  if (error > lowerBound && error < upperBound && rate == 0) {
+/**
+ * Corrects the given axis for Dragon through a series of checks.
+ * 
+ * @param {float} lowerBound - lower bound of where dragon should aim to be within
+ * @param {float} upperBound - upper bound of where dragon should aim to be within
+ * @param {float} error - current error of axis
+ * @param {integer} rate - # of burns in positive or negative direction
+ * @param {string} axis - string identifying which axis is being checked
+ * @param {function} negativeBurn - function to move axis in negative direction
+ * @param {function} positiveBurn - function to move axis in positive direction
+ */
+function correctDragonPYR(lowerBound, upperBound, error, rate, axis, negativeBurn, positiveBurn) {
+  // Check if axis is within bounds
+  if (error >= lowerBound && error <= upperBound && rate == 0) {
     console.log(`${axis} is zeroed.`);
     return true;
   }
 
+  // If error is greater than upperbound, and dragon is not translating in the
+  // correct direction.
   if (error > upperBound && rate != 1) {
     positiveBurn();
     console.log(`Burn to correct positive ${axis}.`);
-  } else if (error < lowerBound && rate != -1) {
+  }
+  // If error is lesser than lowerbound, and dragon is not translating in the
+  // correct direction.
+  else if (error < lowerBound && rate != -1) {
     negativeBurn();
     console.log(`Burn to correct negative ${axis}.`);
-  } else if (error <= upperBound && error >= lowerBound) {
+  }
+  // If error is within bounds but is still translating, counter burn to stop
+  // correction.
+  else if (error <= upperBound && error >= lowerBound) {
     switch (rate) {
       case -1:
         positiveBurn();
@@ -187,7 +207,7 @@ function correct(dragon) {
   let correctPYR = setInterval(function () {
     dragon.update();
 
-    if (!correctDragon(-0.100, 0.100, dragon.yawError, dragon.yawRate, "Yaw", yawLeft, yawRight)) {} else if (!correctDragon(-0.100, 0.100, dragon.rollError, dragon.rollRate, "Roll", rollLeft, rollRight)) {} else if (!correctDragon(-0.100, 0.100, dragon.pitchError, dragon.pitchRate, "Pitch", pitchUp, pitchDown)) {} else {
+    if (!correctDragonPYR(-0.100, 0.100, dragon.yawError, dragon.yawRate, "Yaw", yawLeft, yawRight)) {} else if (!correctDragonPYR(-0.100, 0.100, dragon.rollError, dragon.rollRate, "Roll", rollLeft, rollRight)) {} else if (!correctDragonPYR(-0.100, 0.100, dragon.pitchError, dragon.pitchRate, "Pitch", pitchUp, pitchDown)) {} else {
       console.log("Pitch, Yaw, and Roll corrected.");
       clearInterval(correctPYR);
       correctXYZ(dragon);
