@@ -19,165 +19,79 @@
 var dragTel = new DragonTelemetry();
 
 /**
- * Corrects Pitch with automated burns
- * @param {float} pitchError - Angle of error
- * @param {float} pitchRate - Current rate of translation of pitch
+ * Corrects the given axis for Dragon through a series of checks.
+ * 
+ * @param {float} lowerBound - lower bound of where dragon should aim to be within
+ * @param {float} upperBound - upper bound of where dragon should aim to be within
+ * @param {float} error - current error of axis
+ * @param {integer} rate - # of burns in positive or negative direction
+ * @param {string} axis - string identifying which axis is being checked
+ * @param {function} negativeBurn - function to move axis in negative direction
+ * @param {function} positiveBurn - function to move axis in positive direction
  */
-function correctPitch(pitchError, pitchRate) {
-  // Check if pitch is already zero'd
-  if (pitchError > -0.100 && pitchError < 0.100 && pitchRate == 0) {
-    console.log("Pitch is zeroed.")
+function correctDragonPYR(lowerBound, upperBound, error, rate, axis, negativeBurn, positiveBurn) {
+  // Check if axis is within bounds
+  if (error >= lowerBound && error <= upperBound && rate == 0) {
+    console.log(`${axis} is zeroed.`);
     return true;
   }
 
-  /* If pitchError angle is POSITIVE and there currently is no correction burn
-   * for a POSITIVE angle, initiate a single correction burn for POSITIVE
-   * angle, pitchDown().
-   */
-  if (pitchError > 0.1 && pitchRate * 10 != 1) {
-    pitchDown();
-    console.log("Burn to correct positive pitch angle. (pitchDown)");
+  // If error is greater than upperbound, and dragon is not translating in the
+  // correct direction.
+  if (error > upperBound && rate != 1) {
+    positiveBurn();
+    console.log(`Burn to correct positive ${axis}.`);
   }
-  /* If pitchError angle is NEGATIVE and there currently is no correction burn
-   * for a NEGATIVE angle, initiate a single correction burn for NEGATIVE
-   * angle, pitchUp().
-   */
-  else if (pitchError < -0.1 && pitchRate * 10 != -1) {
-    pitchUp();
-    console.log("Burn to correct negative pitch angle. (pitchUp)");
+  // If error is lesser than lowerbound, and dragon is not translating in the
+  // correct direction.
+  else if (error < lowerBound && rate != -1) {
+    negativeBurn();
+    console.log(`Burn to correct negative ${axis}.`);
   }
-  /* Counter burn the moment right before the angle is about to zero out.
-   * In this case, counter burn when angle is +-0.1 deg.
-   */
-  else if (pitchError <= 0.100 && pitchError >= -0.100) {
-    switch (pitchRate * 10) {
+  // If error is within bounds but is still translating, counter burn to stop
+  // correction.
+  else if (error <= upperBound && error >= lowerBound) {
+    switch (rate) {
       case -1:
-        pitchDown();
-        console.log("Counter burning a negative pitchRate (pitchDown)");
+        positiveBurn();
+        console.log(`Counter burning a negative ${axis}`);
         break;
       case 1:
-        pitchUp();
-        console.log("Counter burning a positive pitchRate (pitchUp)");
-        break;
-      default:
+        negativeBurn();
+        console.log(`Counter burning a positive ${axis}`);
         break;
     }
   }
 }
 
 /**
- * Corrects Yaw with automated burns
- * @param {float} yawError - Angle of error
- * @param {float} yawRate - Current rate of translation of yaw
+ * Corrects Y axis with automated burns
+ * 
+ * @param {dragTel} dragon 
  */
-function correctYaw(yawError, yawRate) {
-  // Check if yaw is already zero'd
-  if (yawError > -0.100 && yawError < 0.100 && yawRate == 0) {
-    console.log("Yaw is zeroed.")
-    return true;
-  }
-
-  /* If yawError angle is POSITIVE and there currently is no correction burn
-   * for a POSITIVE angle, initiate a single correction burn for POSITIVE
-   * angle, yawRight().
-   */
-  if (yawError > 0.1 && yawRate * 10 != 1) {
-    yawRight();
-    console.log("Burn to correct positive yaw angle. (yawRight)");
-  }
-  /* If yawError angle is NEGATIVE and there currently is no correction burn
-   * for a NEGATIVE angle, initiate a single correction burn for NEGATIVE
-   * angle, yawLeft().
-   */
-  else if (yawError < -0.1 && yawRate * 10 != -1) {
-    yawLeft();
-    console.log("Burn to correct negative yaw angle. (yawLeft)");
-  }
-  /* Counter burn the moment right before the angle is about to zero out.
-   * In this case, counter burn when angle is +-0.1 deg.
-   */
-  else if (yawError <= 0.100 && yawError >= -0.100) {
-    switch (yawRate * 10) {
-      case -1:
-        yawRight();
-        console.log("Counter burning a negative yawRate (yawRight)");
-        break;
-      case 1:
-        yawLeft();
-        console.log("Counter burning a positive yawRate (yawLeft)");
-        break;
-      default:
-        break;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Corrects Roll with automated burns
- * @param {float} rollError - Angle of error
- * @param {float} rollRate - Current rate of translation of roll
- */
-function correctRoll(rollError, rollRate) {
-  // Check if roll is already zeroed
-  if (rollError > -0.100 && rollError < 0.100 && rollRate == 0) {
-    console.log("Roll is zeroed.")
-    return true;
-  }
-
-  /* If rollError angle is POSITIVE and there currently is no correction burn
-   * for a POSITIVE angle, initiate a single correction burn for POSITIVE
-   * angle, rollRight().
-   */
-  if (rollError > 0.1 && rollRate * 10 != 1) {
-    rollRight();
-    console.log("Burn to correct positive roll angle. (rollRight)");
-  }
-  /* If rollError angle is NEGATIVE and there currently is no correction burn
-   * for a NEGATIVE angle, initiate a single correction burn for NEGATIVE
-   * angle, rollLeft().
-   */
-  else if (rollError < -0.1 && rollRate * 10 != -1) {
-    rollLeft();
-    console.log("Burn to correct negative roll angle. (rollLeft)");
-  }
-  /* Counter burn the moment right before the angle is about to zero out.
-   * In this case, counter burn when angle is +-0.1 deg.
-   */
-  else if (rollError <= 0.100 && rollError >= -0.100) {
-    switch (rollRate * 10) {
-      case -1:
-        rollRight();
-        console.log("Counter burning a negative rollRate (rollRight)");
-        break;
-      case 1:
-        rollLeft();
-        console.log("Counter burning a positive rollRate (rollLeft)");
-        break;
-      default:
-        break;
-    }
-  }
-
-  return false;
-}
-
 function correctY(dragon) {
+  // Check if Y is zeroed
   if (dragon.yDistance >= -0.010 && dragon.yDistance <= 0.010 && dragon.yRate == 0) {
     console.log("y corrected");
     return true;
   }
 
+  // If y is greater than 0.010 and is not translating left, then translate
+  // left.
   if (dragon.yDistance > 0.010 && dragon.yRate != -1) {
     translateLeft();
     dragon.yRate--;
     console.log("translating left ", dragon.yRate);
-  } else if (dragon.yDistance < -0.010 && dragon.yRate != 1) {
+  }
+  // If y is less than -0.010 and is not translating right, then translate
+  // right
+  else if (dragon.yDistance < -0.010 && dragon.yRate != 1) {
     translateRight();
     dragon.yRate++;
     console.log("translating right ", dragon.yRate);
-  } else if (dragon.yDistance >= -0.010 && dragon.yDistance <= 0.010) {
+  }
+  // Counter burn if y is within -0.010 and 0.010.
+  else if (dragon.yDistance >= -0.010 && dragon.yDistance <= 0.010) {
     switch (dragon.yRate) {
       case -1:
         translateRight();
@@ -195,21 +109,34 @@ function correctY(dragon) {
   }
 }
 
+/**
+ * Corrects Z axis with automated burns
+ * 
+ * @param {dragTel} dragon 
+ */
 function correctZ(dragon) {
+  // Check if z is already zeroed
   if (dragon.zDistance >= -0.010 && dragon.zDistance <= 0.010 && dragon.zRate == 0) {
     console.log("z corrected");
     return true;
   }
 
+  // If z is greater than 0.010 and dragon is not translating down, then
+  // translate down.
   if (dragon.zDistance > 0.010 && dragon.zRate != -1) {
     translateDown();
     dragon.zRate--;
     console.log("translating down ", dragon.zRate);
-  } else if (dragon.zDistance < -0.010 && dragon.zRate != 1) {
+  }
+  // if z is less than -0.010 and dragon is not translating up, then translate
+  // up.
+  else if (dragon.zDistance < -0.010 && dragon.zRate != 1) {
     translateUp();
     dragon.zRate++;
     console.log("translating up ", dragon.zRate);
-  } else if (dragon.zDistance >= -0.010 && dragon.zDistance <= 0.010) {
+  }
+  // Counter burn if z is within -0.010 and 0.010.
+  else if (dragon.zDistance >= -0.010 && dragon.zDistance <= 0.010) {
     switch (dragon.zRate) {
       case -1:
         translateUp();
@@ -227,7 +154,15 @@ function correctZ(dragon) {
   }
 }
 
-
+/**
+ * Initiates correction sequences for x, y, and z axis.
+ * 
+ * Every 10 ms, checks y, then z, exclusively. When y is corrected, translate
+ * forward to increase speed towards ISS. When z is corrected, translate forward
+ * again towards ISS, to gain an average speed of ~0.200 m/s.
+ * 
+ * @param {dragTel} dragon 
+ */
 function correctXYZ(dragon) {
   console.log("Beginning XYZ corrections.");
   translateForward(); // note this changes the elliptical trajectory
@@ -258,13 +193,21 @@ function gravityCheck() {
   }, 1000)
 }
 
-// Initiate dragon corrections after 10 seconds (waiting for load)
+/**
+ * Initiates correction sequences, starting with pitch, yaw, and roll.
+ * 
+ * Every 10ms, checks yaw, then roll, then pitch, exclusively. When all have
+ * been corrected, stop PYR correction and call XYZ correction function
+ * (correctXYZ).
+ * 
+ * @param {dragTel} dragon
+ */
 function correct(dragon) {
   console.log("Beginning automating sequence.");
-  let correctPYR = setInterval(function () { // Loop functions every 10 ms
+  let correctPYR = setInterval(function () {
     dragon.update();
-    //dragon.status();
-    if (!correctYaw(dragon.yawError, dragon.yawRate)) {} else if (!correctRoll(dragon.rollError, dragon.rollRate)) {} else if (!correctPitch(dragon.pitchError, dragon.pitchRate)) {} else {
+
+    if (!correctDragonPYR(-0.100, 0.100, dragon.yawError, dragon.yawRate, "Yaw", yawLeft, yawRight)) {} else if (!correctDragonPYR(-0.100, 0.100, dragon.rollError, dragon.rollRate, "Roll", rollLeft, rollRight)) {} else if (!correctDragonPYR(-0.100, 0.100, dragon.pitchError, dragon.pitchRate, "Pitch", pitchUp, pitchDown)) {} else {
       console.log("Pitch, Yaw, and Roll corrected.");
       clearInterval(correctPYR);
       correctXYZ(dragon);
