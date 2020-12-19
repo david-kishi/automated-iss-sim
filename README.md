@@ -4,11 +4,7 @@ Automating SpaceX's ISS Docking Simulator using JavaScript and control feedback 
 
 **Try it yourself [here](http://www.knytes.com/automated-iss-sim/)!** *(If hyperlink does not work: http://www.knytes.com/automated-iss-sim/)*
 
-<div align="center>
-
 ![Automated SpaceX ISS Docking Sim Demo](readme/spacex_iss_demo.gif)
-
-</div>
 
 - [Automated SpaceX ISS Docking Simulator](#automated-spacex-iss-docking-simulator)
   - [How it works](#how-it-works)
@@ -18,19 +14,15 @@ Automating SpaceX's ISS Docking Simulator using JavaScript and control feedback 
 
 ## How it works
 
-<div align="center">
-
 ![Flow Chart](readme/flow_chart.jpeg)
 
-</div>
-
-Assumptions for v1.00.a-beta:
+**Assumptions for v1.00.a-beta:**
 
 - All Dragon thrusters are fully functional
 - Dragon starts with all axes stationary
 - Thrusters produce a constant amount of thrust
 
-TLDR;
+**TLDR;**
 
 1. Press `Auto` Button on Main Menu
 2. 10 second counter starts while Dragon initiates starting parameters
